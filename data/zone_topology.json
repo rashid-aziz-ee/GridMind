@@ -1,0 +1,11 @@
+{
+  "substation_name": "Mianwali 132kV Grid Station",
+  "zones": {
+    "Zone_1": { "connected_to": ["Zone_2"], "breaker_id": "BRK-001", "assigned_crew": "Team Alpha (PAF Feeder Line)" },
+    "Zone_2": { "connected_to": ["Zone_1", "Zone_3"], "breaker_id": "BRK-002", "assigned_crew": "Team Bravo (Industrial Zone)" },
+    "Zone_3": { "connected_to": ["Zone_2", "Zone_4"], "breaker_id": "BRK-003", "assigned_crew": "Team Charlie (Mianwali City)" },
+    "Zone_4": { "connected_to": ["Zone_3", "Zone_5"], "breaker_id": "BRK-004", "assigned_crew": "Team Delta (Sargodha Road)" },
+    "Zone_5": { "connected_to": ["Zone_4", "Zone_6"], "breaker_id": "BRK-005", "assigned_crew": "Team Echo (Hospital Feeder)" },
+    "Zone_6": { "connected_to": ["Zone_5"], "breaker_id": "BRK-006", "assigned_crew": "Team Rescue (Grid Main Transformer)" }
+  }
+}

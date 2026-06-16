@@ -1,0 +1,40 @@
+{
+  "signatures": {
+    "0": {
+      "type": "Normal Steady State Operation",
+      "confidence_score": 100,
+      "recommended_action": "System parameter balancing normal. Maintain continuous scanning tracking.",
+      "safety_checklist": ["No operational manual override triggers required"]
+    },
+    "1": {
+      "type": "Heavy Short Circuit Fault",
+      "confidence_score": 95,
+      "recommended_action": "Isolate localized node via Overcurrent Relay deployment.",
+      "safety_checklist": ["Confirm breaker status is TRIPPED", "Check line impedance values before manual overrides"]
+    },
+    "2": {
+      "type": "SF6 Gas Leakage Anomaly",
+      "confidence_score": 90,
+      "recommended_action": "Block mechanical breaker try loop due to insulation gas pressure drop.",
+      "safety_checklist": ["Inhibit remote manual operations", "Deploy onsite physical maintenance team for gas sealing"]
+    },
+    "3": {
+      "type": "Lethal Broken Conductor Loop",
+      "confidence_score": 98,
+      "recommended_action": "ENFORCE MANDATORY HARDWARE LOCKOUT. Zero current open loop detected on load side.",
+      "safety_checklist": ["Execute strict Lockout/Tagout (LOTO) protocols", "Perform visual line span inspections", "Establish immediate public exclusion safety perimeter"]
+    },
+    "4": {
+      "type": "Transformer Thermal Overload",
+      "confidence_score": 94,
+      "recommended_action": "Engage auxiliary core cooling fans parameters immediately. Reduce load configuration.",
+      "safety_checklist": ["Monitor oil and winding indicators", "Log continuous temperature gradient creep logs"]
+    },
+    "5": {
+      "type": "Transient Path Clear (Self-Healed)",
+      "confidence_score": 92,
+      "recommended_action": "Execute standard WAPDA Try 1 Auto-Recloser recovery test sequence.",
+      "safety_checklist": ["Verify system parameters flipped back to safe green", "Log temporary branch/bird touch timestamps in database"]
+    }
+  }
+}
