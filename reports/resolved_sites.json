@@ -1,0 +1,47 @@
+{
+  "resolved": [
+    "Zone_6",
+    "Zone_2",
+    "Zone_3",
+    "Zone_1",
+    "Zone_4"
+  ],
+  "history": [
+    {
+      "zone": "Zone_6",
+      "fault_type": "Transient Path Clear (Self-Healed)",
+      "resolved_by": "GridMind AI",
+      "resolved_at": "2026-06-20 13:25:46"
+    },
+    {
+      "zone": "Zone_1",
+      "fault_type": "Transient Path Clear (Self-Healed)",
+      "resolved_by": "GridMind AI",
+      "resolved_at": "2026-06-20 13:25:49"
+    },
+    {
+      "zone": "Zone_4",
+      "fault_type": "Transient Path Clear (Self-Healed)",
+      "resolved_by": "GridMind AI",
+      "resolved_at": "2026-06-20 13:25:51"
+    },
+    {
+      "zone": "Zone_2",
+      "fault_type": "Transient Path Clear (Self-Healed)",
+      "resolved_by": "GridMind AI",
+      "resolved_at": "2026-06-20 13:25:54"
+    },
+    {
+      "zone": "Zone_3",
+      "fault_type": "Transient Path Clear (Self-Healed)",
+      "resolved_by": "GridMind AI",
+      "resolved_at": "2026-06-20 13:25:57"
+    },
+    {
+      "zone": "Zone_2",
+      "fault_type": "Transient Path Clear (Self-Healed)",
+      "resolved_by": "GridMind AI",
+      "resolved_at": "2026-06-20 13:25:59"
+    }
+  ]
+}

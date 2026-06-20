@@ -1,0 +1,33 @@
+GRIDMIND MISSION REPORT
+
+============================================================
+       📋 GRIDMIND MISSION REPORT
+       2026-06-18 11:08:18
+============================================================
+
+📊 SCAN STATISTICS:
+   Total Readings    : 150
+   Remaining Faults  : 41
+   Avg Response Time : 3.38s
+
+🤖 AI RESOLVED (0 sites):
+
+🚒 AWAITING CREW (6 sites):
+   🔴 Zone_2 | Lethal Broken Conductor Loop | 8.43s
+       → Run: python agent/gridmind_agent.py --resolve Zone_2 "TeamName"
+   🔴 Zone_1 | Lethal Broken Conductor Loop | 1.11s
+       → Run: python agent/gridmind_agent.py --resolve Zone_1 "TeamName"
+   🔴 Zone_5 | Lethal Broken Conductor Loop | 7.37s
+       → Run: python agent/gridmind_agent.py --resolve Zone_5 "TeamName"
+   🔴 Zone_3 | Lethal Broken Conductor Loop | 1.24s
+       → Run: python agent/gridmind_agent.py --resolve Zone_3 "TeamName"
+   🔴 Zone_6 | Lethal Broken Conductor Loop | 1.02s
+       → Run: python agent/gridmind_agent.py --resolve Zone_6 "TeamName"
+   🔴 Zone_4 | Heavy Short Circuit Fault | 1.09s
+       → Run: python agent/gridmind_agent.py --resolve Zone_4 "TeamName"
+
+⚠️  HUMAN REVIEW (0 sites):
+
+============================================================
+⏳ Scan will show remaining faults on next run after crews report back.
+============================================================
