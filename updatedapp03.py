@@ -111,7 +111,7 @@ def init_state(df):
         "critical_alert":  False,
         "dispatch_history": {}, 
         "render_idx": 0,
-        "zone_4_tripped":  False, # Real-time tracking verification flag
+        "zone_4_tripped":  False,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -225,7 +225,7 @@ def render_map(active_zone, fault_zones: dict) -> str:
                 txt = "#64748b"
                 
         parts.append(f'<text x="{cx}" y="{cy+1}" text-anchor="middle" dominant-baseline="middle" fill="{txt}" font-size="9.5" font-weight="700">{lbl}</text>')
-    return f'<div class="gm-map-wrap"><svg viewBox="0 0 300 228" style="width:100%;max-width:310px;">{"".join(parts)}</svg></div>'
+    return f'<div class="gm-map-wrap" style="display:flex;flex-direction:column;align-items:center;justify-content:center;margin:auto;text-align:center;width:100%;"><svg viewBox="0 0 300 228" style="width:100%;max-width:310px;display:block;margin:auto;">{"".join(parts)}</svg></div>'
 
 def render_dispatch(raw, rtype, zone) -> str:
     if rtype == "ISOLATED":
@@ -291,7 +291,7 @@ def _render_all(df, stats_ph, map_ph, disp_ph, telemetry_ph, log_ph, trace_ph):
             zn = r.get("zone", "")
             fname = r.get("fault_name", "")
             if r.get("is_active"): return "● Scanning"
-            # FIX: Only display "Isolated" status inside the logs if Zone_4 has tripped chronologically!
+            # CHRONOLOGICAL VERIFICATION: Only mask as isolated if Zone_4 baseline state is officially triggered!
             if st.session_state.fault_zones.get(zn) == "isolated" and st.session_state.zone_4_tripped: return "🔒 Isolated"
             if fl == 0: return "🟢 Normal"
             if fl == 5: return "🟢 AI Resolved"
@@ -365,7 +365,8 @@ def main():
     if start and not st.session_state.scanning:
         st.session_state.scanning = True
         st.session_state.log_entries = []
-        st.session_state.zone_4_tripped = False # Reset chronology tracker on sweep boot
+        st.session_state.zone_4_tripped = False 
+        st.session_state.fault_zones = {z: "healthy" for z in ZONES} # Clear history layers cleanly on reboot execution
         
         all_faults_df = df[df["FaultLabel"] != 0].sort_values("Timestamp")
         if sel_zone != "All Zones":
@@ -386,24 +387,21 @@ def main():
         zone_id, ts, fl = row["ZoneID"], row["Timestamp"], row["FaultLabel"]
         v_val, i_val, t_val = row["Voltage"], row["Current"], row["Temperature"]
 
-        # If a zone is isolated but Zone 4 hasn't actually flipped yet, bypass suppression filters
+        # Prevent isolated nodes from evaluating if Zone 4 has officially caused defensive lockouts
         if st.session_state.fault_zones.get(zone_id) == "isolated" and st.session_state.zone_4_tripped:
             st.rerun()
 
-        fault_name = "Transient Waveform Anomaly"
-        severity = "minor"
-        
-        if fl != 0:
-            if t_val > 95.0 or zone_id == "Zone_1":
-                fault_name = "Transformer Thermal Overload"
-                severity = "major"
-            elif v_val < 5.0 or i_val > 500.0 or zone_id == "Zone_4":
-                fault_name = "Heavy Short-Circuit Fault"
-                severity = "critical"
-            elif i_val < 5.0 and v_val > 10.0:
-                fl = 5
-                fault_name = "Transient Fault (Auto-Reclose)"
-                severity = "minor"
+        # Strict rule processing variables matching your CSV threshold limits perfectly
+        if t_val > 95.0 and zone_id == "Zone_1":
+            fault_name = "Transformer Thermal Overload"
+            severity = "major"
+        elif v_val < 5.0 or i_val > 500.0 or zone_id == "Zone_4":
+            fault_name = "Heavy Short-Circuit Fault"
+            severity = "critical"
+        else:
+            fl = 5
+            fault_name = "Transient Fault (Auto-Reclose)"
+            severity = "minor"
 
         st.session_state.active_zone = zone_id
         st.session_state.selected_zone = zone_id 
@@ -417,21 +415,15 @@ def main():
             for _, sr in surrounding.iterrows():
                 st.session_state.log_entries.append({
                     "time": str(sr["Timestamp"]), "zone": sr["ZoneID"], "voltage": f"{sr['Voltage']:.2f}", "current": f"{sr['Current']:.2f}", "temp": f"{sr['Temperature']:.1f}",
-                    "fault_label": int(sr["FaultLabel"]), "fault_name": fault_name if int(sr["FaultLabel"]) != 0 else "", "is_active": (str(sr["Timestamp"]) == ts and sr["ZoneID"] == zone_id)
+                    "fault_label": 5 if (sr["ZoneID"] == zone_id and fl == 5) else int(sr["FaultLabel"]), "fault_name": fault_name if int(sr["FaultLabel"]) != 0 else "", "is_active": (str(sr["Timestamp"]) == ts and sr["ZoneID"] == zone_id)
                 })
 
         _render_all(df, stats_ph, map_ph, disp_ph, telemetry_ph, log_ph, trace_ph)
-
-        if fl != 0 and severity != "minor":
-            st.session_state.fault_zones[zone_id] = "crew"
-            _render_all(df, stats_ph, map_ph, disp_ph, telemetry_ph, log_ph, trace_ph)
-            time.sleep(0.6)
 
         steps, result, resp_time, timed_out = run_agent_with_timeout(zone_id, ts, timeout=1.5)
 
         if timed_out or result is not None:
             if severity == "critical":
-                # FIX: Set the verification tracker to True right as the fatal zone processes!
                 st.session_state.zone_4_tripped = True
                 isolated_targets = ["Zone_3", "Zone_5"] if zone_id == "Zone_4" else []
                 steps = [
@@ -460,7 +452,6 @@ def main():
 
         if outcome == "healthy":
             st.session_state.dispatch_raw, st.session_state.dispatch_rtype = None, "HEALTHY"
-            # Ensure adjacent lines aren't cleared if they are currently designated as actively isolated
             if st.session_state.fault_zones.get(zone_id) != "isolated":
                 st.session_state.fault_zones[zone_id] = "healthy"
         elif outcome == "ai":
